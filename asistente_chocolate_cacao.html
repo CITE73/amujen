@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Asistente de Costos · Chocolate 60 % de Cacao</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E🍫%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cafe:#3B1F0A; --cafe-mid:#6B3A1F; --cafe-lt:#A0622A; --crema:#FDF6EC; --crema2:#F5ECD8;
+  --verde:#1B5E20; --verde-lt:#E8F5E9; --ambar:#E65100; --ambar-lt:#FFF3E0;
+  --rojo:#B71C1C; --rojo-lt:#FFEBEE; --azul:#0D47A1; --azul-lt:#E3F2FD;
+  --gris:#F0EBE3; --txt:#2C1A0E; --txt-s:#7A6652; --borde:#DDD0C0; --oro:#C8860A;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--gris);color:var(--txt);min-height:100vh}
+header{background:var(--cafe);padding:14px 18px 10px}
+.h-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:6px}
+.btn-dashboard{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.4);border-radius:6px;padding:5px 11px;font-size:.78rem;font-weight:600;text-decoration:none;white-space:nowrap}
+.h-empresa{font-family:'DM Serif Display',serif;color:var(--oro);font-size:18px;line-height:1.2}
+.h-sub{margin-top:3px;color:var(--crema);font-size:11px;opacity:.85}
+.h-badge{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:10px;padding:3px 10px;border-radius:20px;font-weight:600;white-space:nowrap}
+.h-title{text-align:center;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.15)}
+.h-title span{font-family:'DM Serif Display',serif;font-size:19px;color:#fff;letter-spacing:.05em}
+.sync-bar{background:var(--cafe-mid);color:var(--crema);font-size:11px;padding:6px 16px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.btn-sync{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:6px;padding:4px 12px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit}
+.lote-bar{background:var(--crema2);border-bottom:1px solid var(--borde);padding:7px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.lote-id{font-family:'DM Serif Display',serif;color:var(--cafe);font-size:14px}
+.lote-fecha{font-size:11px;color:var(--txt-s)}
+.wrap{padding:14px 16px;max-width:700px;margin:0 auto}
+.inputs-card{background:#fff;border-radius:12px;border:1px solid var(--borde);padding:14px;margin-bottom:12px}
+.sec-label{font-size:10px;font-weight:600;color:var(--txt-s);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
+.inputs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.inputs-grid.g2{grid-template-columns:1fr 1fr}
+.field{display:flex;flex-direction:column;gap:3px}
+.field label{font-size:11px;color:var(--txt-s);font-weight:500}
+.field input,.field select{border:1px solid var(--borde);border-radius:7px;padding:8px 10px;font-size:14px;font-family:inherit;background:var(--crema);color:var(--txt);font-weight:500}
+.field input:focus,.field select:focus{outline:none;border-color:var(--cafe-mid);background:#fff}
+.field,.inputs-grid>*{min-width:0}
+.field input,.field select{width:100%;min-width:0}
+.tabs{display:flex;gap:4px;margin-bottom:12px;background:#fff;border-radius:10px;border:1px solid var(--borde);padding:4px}
+.tab{flex:1;border:none;border-radius:7px;padding:9px 8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;background:transparent;color:var(--txt-s);text-align:center}
+.tab.active{background:var(--cafe);color:var(--oro)}
+.tab-pane{display:none}.tab-pane.active{display:block}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:12px}
+.kpi{background:#fff;border-radius:10px;padding:12px 14px;border:1px solid var(--borde)}
+.kpi-l{font-size:10px;color:var(--txt-s);margin-bottom:4px;font-weight:500;line-height:1.3}
+.kpi-v{font-size:22px;font-weight:600;color:var(--cafe);line-height:1}
+.kpi-u{font-size:10px;color:var(--txt-s);margin-top:3px}
+.kpi.hl{border-color:var(--cafe-mid);background:var(--crema)}
+.kpi.ok{border-color:var(--verde);background:var(--verde-lt)}
+.kpi.warn{border-color:var(--ambar);background:var(--ambar-lt)}
+.kpi.info{border-color:var(--azul);background:var(--azul-lt)}
+.kpi-v.verde{color:var(--verde)}.kpi-v.azul{color:var(--azul)}
+.flujo-card{background:#fff;border-radius:12px;border:1px solid var(--borde);padding:14px;margin-bottom:12px}
+.flujo-legend{display:flex;gap:14px;margin-bottom:12px;flex-wrap:wrap}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--txt-s)}
+.leg-dot{width:10px;height:10px;border-radius:50%}
+.leg-dot.rojo{background:var(--rojo)}.leg-dot.ambar{background:var(--ambar)}.leg-dot.verde{background:var(--verde)}
+.etapa-row{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;margin-bottom:4px}
+.etapa-row:hover{background:var(--crema)}
+.etapa-num{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;flex-shrink:0}
+.etapa-num.verde{background:var(--verde)}.etapa-num.ambar{background:var(--ambar)}.etapa-num.rojo{background:var(--rojo)}
+.etapa-info{flex:1;min-width:0}
+.etapa-nombre{font-size:12px;font-weight:600}
+.etapa-sub{font-size:10px;color:var(--txt-s)}
+.etapa-bar-wrap{width:96px;flex-shrink:0}
+.etapa-bar-bg{background:var(--gris);border-radius:4px;height:6px;overflow:hidden}
+.etapa-bar-fill{height:6px;border-radius:4px;transition:width .4s}
+.etapa-bar-pct{font-size:10px;color:var(--txt-s);margin-top:2px;text-align:right;white-space:nowrap}
+.etapa-badge{width:92px;flex-shrink:0;text-align:center}
+.badge{display:inline-block;font-size:10px;padding:3px 9px;border-radius:12px;font-weight:600}
+.badge-verde{background:var(--verde);color:#fff}.badge-ambar{background:var(--ambar);color:#fff}.badge-rojo{background:var(--rojo);color:#fff}
+.etapa-arrow{text-align:center;color:var(--txt-s);font-size:14px;padding:2px 0 2px 16px}
+.p3-inputs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn-guardar{width:100%;background:var(--cafe);color:var(--crema);border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;margin-bottom:14px}
+.btn-guardar:hover{background:var(--cafe-mid)}
+.msg-guardado{border-radius:8px;padding:10px 14px;font-size:12px;margin-bottom:12px;display:none}
+.msg-guardado.ok{background:var(--verde-lt);border:1px solid var(--verde);color:var(--verde)}
+.msg-guardado.err{background:var(--rojo-lt);border:1px solid var(--rojo);color:var(--rojo)}
+.hist-card{background:#fff;border-radius:12px;border:1px solid var(--borde);padding:14px}
+.hist-empty{font-size:12px;color:var(--txt-s);text-align:center;padding:20px 0}
+.hist-mas{font-size:11px;color:var(--txt-s);text-align:center;padding:8px 0 2px;font-style:italic}
+table{width:100%;border-collapse:collapse;font-size:11px}
+th{background:var(--cafe);color:var(--oro);padding:7px 8px;text-align:left;font-weight:600;font-size:10px}
+td{padding:7px 8px;border-bottom:1px solid #F0E8DC;vertical-align:middle}
+tr:last-child td{border:none}
+tr:nth-child(even) td{background:#FAFAF8}
+td.out{white-space:nowrap}
+.hint{font-size:11px;color:var(--txt-s);line-height:1.4}
+.aviso{font-size:11px;color:var(--ambar);background:var(--ambar-lt);border:1px solid var(--ambar);border-radius:7px;padding:6px 10px;margin-top:10px}
+.emp-box{margin-top:10px;background:var(--crema);border:1px solid var(--borde);border-radius:8px;padding:8px 10px;font-size:11px;color:var(--txt-s);line-height:1.5}
+.emp-box b{color:var(--txt)}
+@media(max-width:480px){
+  .inputs-grid{grid-template-columns:1fr 1fr}
+  .etapa-bar-wrap{width:78px}
+  .etapa-badge{display:none}
+  .kpi-v{font-size:18px}
+  .p3-inputs{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="h-top">
+    <div>
+      <div class="h-empresa" id="h-empresa">AMUJEN</div>
+      <div class="h-sub" id="h-cite">Asociación de Mujeres Emprendedoras de Nuevo Progreso</div>
+    </div>
+    <span class="h-badge" id="sync-badge">● Solo local</span>
+    <a href="#" id="btn-pasta" class="btn-dashboard">← Pasta de cacao</a>
+    <a href="#" id="btn-dashboard" class="btn-dashboard">📊 Dashboard</a>
+  </div>
+  <div class="h-title"><span>ASISTENTE DE COSTOS · CHOCOLATE 60 % CON INCLUSIÓN</span></div>
+</header>
+
+<div class="sync-bar">
+  <span id="sync-status">📦 Datos guardados localmente</span>
+  <button class="btn-sync" onclick="intentarSync()">↑ Sincronizar</button>
+</div>
+
+<div class="lote-bar">
+  <span class="lote-id" id="lote-display">—</span>
+  <span class="lote-fecha" id="fecha-display">—</span>
+</div>
+
+<div class="wrap">
+
+  <div class="inputs-card">
+    <div class="sec-label">Datos del lote — compartidos por las 3 pestañas</div>
+    <div class="inputs-grid g2">
+      <div class="field"><label>Pasta de cacao (kg)</label><input type="number" id="kg_mp" value="40" min="1" step="1" oninput="recalcular()"></div>
+      <div class="field"><label>Presentación</label><select id="presentacion" onchange="recalcular()"></select></div>
+      <div class="field"><label>Inclusión</label><select id="inclusion" onchange="cambiarInclusion()"></select></div>
+      <div class="field"><label>Base mensual para fijos (kg de pasta)</label><input type="number" id="kg_mes" value="80" min="1" step="1" oninput="recalcular()"></div>
+    </div>
+    <div class="sec-label" style="margin-top:14px">Precios de insumos (S/·kg) — editables</div>
+    <div class="inputs-grid g2">
+      <div class="field"><label>Pasta de cacao</label><input type="number" id="precio_mp" value="70" min="0" step="0.5" oninput="recalcular()"></div>
+      <div class="field"><label>Manteca de cacao</label><input type="number" id="precio_manteca" value="62" min="0" step="0.5" oninput="recalcular()"></div>
+      <div class="field"><label>Azúcar</label><input type="number" id="precio_azucar" value="3.8" min="0" step="0.1" oninput="recalcular()"></div>
+      <div class="field"><label id="lbl-precio-incl">Inclusión</label><input type="number" id="precio_inclusion" value="52" min="0" step="0.5" oninput="recalcular()"></div>
+    </div>
+    <div class="inputs-grid g2" id="caja-box" style="margin-top:10px">
+      <div class="field"><label>Caja de cartón (S/ por caja)</label><input type="number" id="caja_precio" value="0.69" min="0" step="0.05" oninput="recalcular()"></div>
+      <div class="field"><label>Tabletas por caja</label><input type="number" id="caja_n" value="1" min="1" step="1" oninput="recalcular()"></div>
+    </div>
+    <div class="emp-box" id="emp-box">—</div>
+    <div class="hint" id="hint-inputs" style="margin-top:10px">—</div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="setTab(0)">📊 Unidades procesadas</button>
+    <button class="tab" onclick="setTab(1)">💰 Costos de producción</button>
+    <button class="tab" onclick="setTab(2)">📈 Precio y rentabilidad</button>
+  </div>
+
+  <div class="tab-pane active" id="pane0">
+    <div class="kpi-grid">
+      <div class="kpi hl"><div class="kpi-l">Pasta de cacao entrada</div><div class="kpi-v out" id="k1-kg">—</div><div class="kpi-u">Kg ingresados</div></div>
+      <div class="kpi ok"><div class="kpi-l">Chocolate producido</div><div class="kpi-v verde out" id="k1-choc">—</div><div class="kpi-u">Kg producto final</div></div>
+      <div class="kpi ok"><div class="kpi-l">Rendimiento del proceso</div><div class="kpi-v verde out" id="k1-rend">—</div><div class="kpi-u">% de la mezcla + inclusión</div></div>
+      <div class="kpi ok"><div class="kpi-l">Unidades producidas</div><div class="kpi-v verde out" id="k1-unidades">—</div><div class="kpi-u" id="k1-pres-label">Unidades</div></div>
+    </div>
+    <div class="flujo-card">
+      <div class="sec-label">Fórmula del lote (60 % cacao)</div>
+      <table>
+        <tr><th>Insumo</th><th>% de la mezcla</th><th>Kg</th><th>S/</th></tr>
+        <tr><td>Pasta de cacao (licor)</td><td>45 %</td><td class="out" id="f-pasta-kg">—</td><td class="out" id="f-pasta-s">—</td></tr>
+        <tr><td>Manteca de cacao</td><td>15 %</td><td class="out" id="f-manteca-kg">—</td><td class="out" id="f-manteca-s">—</td></tr>
+        <tr><td>Azúcar</td><td>40 %</td><td class="out" id="f-azucar-kg">—</td><td class="out" id="f-azucar-s">—</td></tr>
+        <tr><td id="f-incl-lbl">Inclusión (12 % del peso)</td><td>+12 %</td><td class="out" id="f-incl-kg">—</td><td class="out" id="f-incl-s">—</td></tr>
+      </table>
+    </div>
+    <div class="flujo-card">
+      <div class="sec-label">Flujo de proceso · Tiempos y mermas del Excel</div>
+      <div class="flujo-legend">
+        <div class="leg-item"><div class="leg-dot rojo"></div>Cuello de botella</div>
+        <div class="leg-item"><div class="leg-dot ambar"></div>Presión alta</div>
+        <div class="leg-item"><div class="leg-dot verde"></div>Fluye bien</div>
+      </div>
+      <div id="flujo-body"><div class="hist-empty">Ingresa los kg de pasta para ver el flujo.</div></div>
+    </div>
+  </div>
+
+  <div class="tab-pane" id="pane1">
+    <div class="kpi-grid">
+      <div class="kpi hl"><div class="kpi-l">Precio pasta de cacao</div><div class="kpi-v out" id="k2-a">—</div><div class="kpi-u">por kilogramo</div></div>
+      <div class="kpi"><div class="kpi-l">Costo producción x unidad</div><div class="kpi-v out" id="k2-costo-und">—</div><div class="kpi-u" id="k2-und-label">por unidad</div></div>
+      <div class="kpi ok"><div class="kpi-l">Capital de trabajo</div><div class="kpi-v verde out" id="k2-capital">—</div><div class="kpi-u">total del lote</div></div>
+      <div class="kpi"><div class="kpi-l">Costo por kg de chocolate</div><div class="kpi-v out" id="k2-costo-kg">—</div><div class="kpi-u">capital ÷ kg producidos</div></div>
+      <div class="kpi info"><div class="kpi-l">Consumo electricidad</div><div class="kpi-v azul out" id="k2-elec">—</div><div class="kpi-u">total equipos</div></div>
+    </div>
+
+    <div class="flujo-card">
+      <div class="sec-label">Desglose ABC de costos</div>
+      <table>
+        <tr><th>Componente</th><th>Tipo</th><th>S/</th><th>%</th></tr>
+        <tr><td>Pasta de cacao</td><td>Variable</td><td class="out" id="abc-pasta">—</td><td class="out" id="abc-pasta-pct">—</td></tr>
+        <tr><td>Manteca de cacao</td><td>Variable</td><td class="out" id="abc-manteca">—</td><td class="out" id="abc-manteca-pct">—</td></tr>
+        <tr><td>Azúcar</td><td>Variable</td><td class="out" id="abc-azucar">—</td><td class="out" id="abc-azucar-pct">—</td></tr>
+        <tr><td id="abc-incl-lbl">Inclusión</td><td>Variable</td><td class="out" id="abc-incl">—</td><td class="out" id="abc-incl-pct">—</td></tr>
+        <tr><td id="abc-emp-lbl">Empaque de la presentación</td><td>Variable</td><td class="out" id="abc-emp">—</td><td class="out" id="abc-emp-pct">—</td></tr>
+        <tr><td>Electricidad (equipos)</td><td>Variable</td><td class="out" id="abc-elec">—</td><td class="out" id="abc-elec-pct">—</td></tr>
+        <tr><td>Mano de obra (horas-hombre × tarifa)</td><td>Variable</td><td class="out" id="abc-mod">—</td><td class="out" id="abc-mod-pct">—</td></tr>
+        <tr><td>Depreciación (por día de uso)</td><td>Fijo</td><td class="out" id="abc-dep">—</td><td class="out" id="abc-dep-pct">—</td></tr>
+        <tr><td>Mantenimiento (por día de uso)</td><td>Fijo</td><td class="out" id="abc-mant">—</td><td class="out" id="abc-mant-pct">—</td></tr>
+        <tr><td>Gastos administrativos (marketing, contabilidad)</td><td>Fijo</td><td class="out" id="abc-admin">—</td><td class="out" id="abc-admin-pct">—</td></tr>
+        <tr><td>Equipos de protección personal (EPP)</td><td>Fijo</td><td class="out" id="abc-epp">—</td><td class="out" id="abc-epp-pct">—</td></tr>
+        <tr style="font-weight:600;background:var(--crema)"><td>TOTAL</td><td></td><td class="out" id="abc-total">—</td><td>100%</td></tr>
+      </table>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi"><div class="kpi-l">Costos fijos</div><div class="kpi-v out" id="k2-fijo">—</div><div class="kpi-u out" id="k2-fijo-pct">—</div></div>
+      <div class="kpi"><div class="kpi-l">Costos variables</div><div class="kpi-v out" id="k2-var">—</div><div class="kpi-u out" id="k2-var-pct">—</div></div>
+    </div>
+    <div class="kpi-grid">
+      <div class="kpi"><div class="kpi-l">Horas / Máquina</div><div class="kpi-v out" id="k2-hmaq">—</div><div class="kpi-u">total equipos</div></div>
+      <div class="kpi"><div class="kpi-l">Horas / Hombre</div><div class="kpi-v out" id="k2-hhom">—</div><div class="kpi-u">mano de obra</div></div>
+      <div class="kpi"><div class="kpi-l">Nro. de tandas</div><div class="kpi-v out" id="k2-tandas">—</div><div class="kpi-u">refinadora de 18 kg</div></div>
+      <div class="kpi"><div class="kpi-l">Días de trabajo</div><div class="kpi-v out" id="k2-dias">—</div><div class="kpi-u">jornadas de proceso</div></div>
+    </div>
+  </div>
+
+  <div class="tab-pane" id="pane2">
+    <div class="inputs-card">
+      <div class="sec-label">Parámetros de precio</div>
+      <div class="p3-inputs">
+        <div class="field"><label>Utilidad deseada (%)</label><input type="number" id="utilidad_pct" value="50" min="0" max="200" step="1" oninput="recalcular()"></div>
+        <div class="field"><label>Impuesto / Renta (%)</label><input type="number" id="impuesto_pct" value="1.5" min="0" max="30" step="0.5" oninput="recalcular()"></div>
+      </div>
+    </div>
+    <div class="kpi-grid">
+      <div class="kpi ok"><div class="kpi-l">Precio de venta (x mayor)</div><div class="kpi-v verde out" id="k3-1">—</div><div class="kpi-u" id="k3-1-u">por unidad</div></div>
+      <div class="kpi ok"><div class="kpi-l">Utilidad en soles</div><div class="kpi-v verde out" id="k3-util">—</div><div class="kpi-u">total del lote</div></div>
+      <div class="kpi info"><div class="kpi-l">Precio x mayor con IGV (18%)</div><div class="kpi-v azul out" id="k3-3">—</div><div class="kpi-u">por unidad</div></div>
+      <div class="kpi"><div class="kpi-l">Precio x kg de chocolate</div><div class="kpi-v out" id="k3-4">—</div><div class="kpi-u">sin IGV</div></div>
+    </div>
+    <div class="flujo-card">
+      <div class="sec-label">Punto de equilibrio del lote</div>
+      <div class="kpi-grid" style="margin-bottom:0">
+        <div class="kpi"><div class="kpi-l">Unidades de equilibrio</div><div class="kpi-v out" id="be-qe">—</div><div class="kpi-u out" id="be-pct">—</div></div>
+        <div class="kpi"><div class="kpi-l">Ingreso de equilibrio</div><div class="kpi-v out" id="be-ing">—</div><div class="kpi-u">sin IGV</div></div>
+      </div>
+    </div>
+    <div class="flujo-card">
+      <div class="sec-label">Referencia de escalabilidad (economías de escala)</div>
+      <table>
+        <tr><th>Kg pasta</th><th id="esc-th-u">Unidades</th><th>Costo x und.</th><th>Precio venta</th></tr>
+        <tr><td>20</td><td class="out" id="esc-20-u">—</td><td class="out" id="esc-20-c">—</td><td class="out" id="esc-20-p">—</td></tr>
+        <tr><td>40</td><td class="out" id="esc-40-u">—</td><td class="out" id="esc-40-c">—</td><td class="out" id="esc-40-p">—</td></tr>
+        <tr><td>80</td><td class="out" id="esc-80-u">—</td><td class="out" id="esc-80-c">—</td><td class="out" id="esc-80-p">—</td></tr>
+        <tr style="background:var(--crema);font-weight:600"><td id="esc-cur-lbl">Este lote</td><td class="out" id="esc-cur-u">—</td><td class="out" id="esc-cur-c">—</td><td class="out" id="esc-cur-p">—</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <button class="btn-guardar" onclick="guardarLote()">💾 Guardar Lote</button>
+  <div class="msg-guardado" id="msg-guardado"></div>
+
+  <div class="hist-card">
+    <div class="sec-label" style="margin-bottom:8px">📂 Historial de lotes</div>
+    <div id="hist-body"><div class="hist-empty">Sin registros guardados.</div></div>
+  </div>
+
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// CONFIG 1/2 — IDENTIDAD DEL CLIENTE
+// ══════════════════════════════════════════
+const CFG = {
+  EMPRESA:         'AMUJEN',
+  MOSTRAR_CITE:    true,
+  APPS_SCRIPT_URL: 'PEGAR_URL_DEPLOY_AQUI',   // la misma URL /exec que la pasta, los servicios y el dashboard
+  SYNC_MODE:       'GET',
+  PASTA_URL:       'asistente_produccion_cacao.html',
+  DASHBOARD_URL:   'dashboard_cacao_costos.html',
+  STORAGE_KEY:     'apd_amujen_chocolate_cacao',
+};
+const STORAGE_KEY = CFG.STORAGE_KEY;
+
+// ══════════════════════════════════════════
+// CONFIG 2/2 — PARÁMETROS DE PLANTA
+// Fuente: Costos_chocolate_al_60_aguaymanto_final.xlsx (hojas 1–7) + respuestas de AMUJEN.
+// ══════════════════════════════════════════
+const HP_KW = 0.7457;
+const HORAS_DIA_HOMBRE = 8;        // el Tablero del Excel de chocolate dice 8 h/día (la app de pasta usa 12 por su Excel)
+const TARIFA_KWH = 1.1275;
+const TARIFA_HORA_MOD = 7.5;       // jornal S/ 60 ÷ 8 h
+
+// Fórmula 60 % cacao: licor 45 % + manteca 15 % + azúcar 40 % (Excel h1 P6:P8)
+const P_LICOR = 0.45, P_MANTECA = 0.15, P_AZUCAR = 0.40;
+const KG_LICOR_BATCH_FORMULACION = 8;     // h1 C4: 8 kg de licor por batch de formulación (5 min de hombre)
+const INCLUSION_PCT = 0.12;               // h1 I7: la inclusión suma 12 % del peso
+
+const INCLUSIONES = {
+  aguaymanto: { nombre: 'Aguaymanto deshidratado', precio: 52 },
+  pecanas:    { nombre: 'Pecanas',                 precio: 53 },
+  almendras:  { nombre: 'Almendras',               precio: 36 },
+};
+const INCLUSION_DEFECTO = 'aguaymanto';
+
+// Etapas (h1 + h3). kinBase = kg por batch de cada etapa; fact = factor de peso (merma <1, inclusión >1).
+const ETAPAS = [
+  {id:'for', n:'1. Formulación',            sub:'Pesado y mezcla de insumos',                       fact:1,     minMaq:0,      minHom:5,      base:'for'},
+  {id:'ref', n:'2. Refinadora de bolas',    sub:'Autónoma · 1 molino · el operario no está todo el tiempo', fact:1-0.056, kinBase:18,     minMaq:240, minHom:5,   base:'kin', up:true},
+  {id:'tem', n:'3. Temperado',              sub:'Aire acondicionado',                               fact:1-0.01, kinBase:17,     minMaq:180,    minHom:180,    base:'kin'},
+  {id:'inc', n:'4. Agregar inclusión',      sub:'Manual',                                           fact:1+INCLUSION_PCT, kinBase:16.83, minMaq:0, minHom:60, base:'kin', inclusion:true},
+  {id:'tab', n:'5. Tableteado',             sub:'Moldeo · aire acondicionado',                      fact:1,     kinBase:18.8496, minMaq:324,   minHom:324,    base:'kin'},
+  {id:'cri', n:'6. Cristalización',         sub:'Llevar a la cámara de frío (30 s de hombre)',      fact:1,     kinBase:18.8496, minMaq:45,    minHom:0.5,    base:'kin'},
+  {id:'env', n:'7. Desmoldado y envasado',  sub:'Control por unidad · selladora',                   fact:1,     minMaq:10/60,  minHom:35/60,  base:'und'},
+  {id:'alm', n:'8. Almacén (cámara de frío)', sub:'Cámara de frío · 48 h por lote',                 fact:1,     minMaq:2880,   minHom:0.1,    base:'und', maqFija:true, pasiva:true},
+];
+
+// Equipos eléctricos (h4): kW = HP × 0.7457; horas = minutos de MÁQUINA de las etapas indicadas / 60 (igual que el Excel).
+const EQUIPOS_ELEC = [
+  {n:'Molino de bolas 1',  hp:2,   etapas:['ref']},
+  {n:'Aire acondicionado', hp:4,   etapas:['tem', 'tab', 'env']},
+  {n:'Cámara de frío',     hp:1,   etapas:['cri', 'alm']},
+  {n:'Selladora',          hp:1.6, etapas:['env']},
+];
+
+// Depreciación y mantenimiento por DÍA de uso (h5). Solo los equipos del flujo de chocolate.
+const EQUIPOS_DEP = [ {n:'Molino de bolas 1', valor:14000}, {n:'Aire acondicionado', valor:12000}, {n:'Cámara de frío', valor:6000} ];
+const VIDA_UTIL_ANIOS = 15;
+const MANT_ANUAL_PCT  = 0.03;       // igual que la app de pasta (el Excel de chocolate usa 5 %)
+// ⚠ Corrección al Excel: h5 G15 divide el mantenimiento mensual entre 12 en vez de entre 30.
+let DEP_X_DIA  = EQUIPOS_DEP.reduce((s, e) => s + e.valor / VIDA_UTIL_ANIOS / 12 / 30, 0);
+let MANT_X_DIA = EQUIPOS_DEP.reduce((s, e) => s + e.valor * MANT_ANUAL_PCT / 12 / 30, 0);
+
+const EPP_X_DIA = 0.28 + 0.32 + 0.35 + 1 + 0.15 + 0.30;     // Tablero filas 69–75
+const ADMIN = [ {n:'Marketing y redes sociales', monto:300}, {n:'Contabilidad y administración', monto:80} ];
+const ADMIN_MES = ADMIN.reduce((s, a) => s + a.monto, 0);   // S/ 380, se reparte por kg de pasta ÷ base mensual
+
+// Empaque por UNIDAD. Tabletas (25, 50 y 80 g): bolsa laminada .25 + etiqueta (S/28 ÷ 380) + caja ÷ tabletas por caja (editable).
+const BOLSA_TABLETA = 0.25, ETIQUETA = 28 / 380;
+const PRESENTACIONES = {
+  25:   {nombre:'Tableta 25 g',  tableta:true},
+  50:   {nombre:'Tableta 50 g',  tableta:true},
+  80:   {nombre:'Tableta 80 g',  tableta:true},
+  500:  {nombre:'Barra 500 g',   items:[{n:'Bolsa laminada 500 g', p:0.50}]},
+  1000: {nombre:'Bloque 1 kg',   items:[{n:'Bolsa laminada 1–5 kg', p:2.00}, {n:'Caja de cartón 1–5 kg', p:2.00}]},
+};
+const PRES_DEFECTO = 50;
+function empaqueItems(pres, p) {
+  const pp = PRESENTACIONES[pres] || PRESENTACIONES[PRES_DEFECTO];
+  if (!pp.tableta) return pp.items;
+  const n = p.cajaN > 0 ? p.cajaN : 1;
+  return [{n:'Bolsa laminada', p:BOLSA_TABLETA}, {n:'Etiqueta', p:ETIQUETA}, {n: n > 1 ? `Caja de cartón (1 ÷ ${n} tabletas)` : 'Caja de cartón', p:p.cajaPrecio / n}];
+}
+
+let calc = {};
+function num(id, def) { const v = parseFloat(document.getElementById(id).value); return isNaN(v) ? def : v; }
+const r2 = x => Math.round(x * 100) / 100;
+const up2 = x => Math.ceil(x * 100 - 1e-9) / 100;
+
+// ══════════════════════════════════════════
+// MOTOR DE CÁLCULO — función pura.
+// p = {kg, precio, precioManteca, precioAzucar, inclusion, precioInclusion, pres, cajaPrecio, cajaN, kgMes, util, imp}
+// ══════════════════════════════════════════
+function calcularLote(p) {
+  const { kg, pres, util, imp } = p;
+  const kgMes = p.kgMes > 0 ? p.kgMes : kg;
+  const fracMes = Math.min(1, kg / kgMes);
+  const pp = PRESENTACIONES[pres] || PRESENTACIONES[PRES_DEFECTO];
+  const inc = INCLUSIONES[p.inclusion] || INCLUSIONES[INCLUSION_DEFECTO];
+
+  // 1) Fórmula: licor 45 % + manteca 15 % + azúcar 40 %. La mezcla se redondea hacia arriba a kg enteros (h3 AC10).
+  const kg_licor   = kg;
+  const kg_azucar  = kg * P_AZUCAR / P_LICOR;
+  const kg_manteca = kg * P_MANTECA / P_LICOR;
+  const kg_mezcla  = Math.ceil(kg_licor + kg_azucar + kg_manteca - 1e-9);
+
+  // 2) Balance de materia y tiempos por etapa
+  let k = kg_mezcla, unidades = null, kg_incl = 0;
+  const etapas = ETAPAS.map(e => {
+    const kin = k, kout = k * e.fact;
+    if (e.inclusion) kg_incl = kout - kin;
+    k = kout;
+    return { ...e, kin, kout };
+  });
+  const kg_choc = k;
+  unidades = Math.floor(kg_choc * 1000 / pres + 1e-9);
+  etapas.forEach(f => {
+    if (f.base === 'for') { f.mMaq = 0; f.mHom = r2(kg / KG_LICOR_BATCH_FORMULACION * f.minHom); }
+    else if (f.base === 'und') { f.mMaq = f.maqFija ? f.minMaq : f.minMaq * unidades; f.mHom = f.minHom * unidades; }
+    else {
+      const cant = f.kin / f.kinBase;
+      if (f.up) { f.mMaq = cant <= 1 ? f.minMaq : up2(cant * f.minMaq); f.mHom = cant <= 1 ? f.minHom : up2(cant * f.minHom); }
+      else { f.mMaq = r2(cant * f.minMaq); f.mHom = r2(cant * f.minHom); }
+    }
+    f.hm = f.mMaq / 60; f.hh = f.mHom / 60;
+  });
+  const porId = id => etapas.find(f => f.id === id);
+  const horas_maq = etapas.reduce((s, f) => s + f.hm, 0);
+  const horas_hom = etapas.reduce((s, f) => s + f.hh, 0);
+  const cargaH = f => f.pasiva ? f.hh : Math.max(f.hm, f.hh);
+  const maxH = Math.max(...etapas.map(cargaH));
+  etapas.forEach(f => { f.carga = maxH > 0 ? cargaH(f) / maxH * 100 : 0; f.nivel = f.carga >= 80 ? 'rojo' : f.carga >= 50 ? 'ambar' : 'verde'; });
+  const dias = Math.max(Math.ceil(Math.round(horas_hom) / HORAS_DIA_HOMBRE), 1);
+  const tandas = porId('ref').kin / porId('ref').kinBase;
+
+  // 3) Mano de obra y electricidad
+  const costo_mod = horas_hom * TARIFA_HORA_MOD;
+  const elec = EQUIPOS_ELEC.map(e => {
+    const horas = e.etapas.reduce((s, id) => s + porId(id).hm, 0);
+    const kwh = e.hp * HP_KW * horas;
+    return { n: e.n, horas, kwh, soles: kwh * TARIFA_KWH };
+  });
+  const kwh = elec.reduce((s, e) => s + e.kwh, 0);
+  const costo_elec = kwh * TARIFA_KWH;
+
+  // 4) Materia prima y empaque
+  const costo_pasta   = kg_licor   * p.precio;
+  const costo_manteca = kg_manteca * p.precioManteca;
+  const costo_azucar  = kg_azucar  * p.precioAzucar;
+  const costo_incl    = kg_incl    * p.precioInclusion;
+  const costo_mp      = costo_pasta + costo_manteca + costo_azucar + costo_incl;
+  const items   = empaqueItems(pres, p);
+  const emp_und = items.reduce((s, it) => s + it.p, 0);
+  const costo_emp = unidades * emp_und;
+
+  const costo_dep  = DEP_X_DIA * dias;
+  const costo_mant = MANT_X_DIA * dias;
+  const costo_admin = ADMIN_MES * fracMes;
+  const costo_epp  = EPP_X_DIA * dias;
+
+  const variable = costo_mp + costo_emp + costo_elec + costo_mod;
+  const fijo     = costo_dep + costo_mant + costo_admin + costo_epp;
+  const capital_trabajo = variable + fijo;
+  const costo_und = unidades > 0 ? capital_trabajo / unidades : 0;
+
+  // 5) Precio (utilidad = markup sobre costo; impuesto sobre el precio; IGV ×1.18)
+  const precio_venta = costo_und * (1 + util / 100) * (1 + imp / 100);
+  const precio_igv   = precio_venta * 1.18;
+  const utilidad_sol = capital_trabajo * (util / 100);
+  const precio_kg    = precio_venta * 1000 / pres;
+  const costo_kg     = kg_choc > 0 ? capital_trabajo / kg_choc : 0;
+  const cv_und = unidades > 0 ? variable / unidades : 0;
+  const margen = precio_venta - cv_und;
+  const qe = margen > 0 && unidades > 0 ? fijo / margen : null;
+
+  return {
+    entradas: p, kg, pres, util, imp, kgMes, fracMes, nombre_pres: pp.nombre, inclusion: p.inclusion, nombre_incl: inc.nombre,
+    kg_licor, kg_azucar, kg_manteca, kg_mezcla, kg_incl, kg_choc, rendimiento: (kg_mezcla + kg_incl) > 0 ? kg_choc / (kg_mezcla + kg_incl) * 100 : 0,
+    unidades, etapas, elec, kwh, horas_maq, horas_hom, dias, tandas, empaque: items, emp_und,
+    costo_pasta, costo_manteca, costo_azucar, costo_incl, costo_mp, costo_emp, costo_elec, costo_mod, costo_dep, costo_mant, costo_admin, costo_epp,
+    variable, fijo, capital_trabajo, costo_und, costo_kg, precio_venta, precio_igv, utilidad_sol, precio_kg,
+    cv_und, qe, ingreso_eq: qe === null ? null : qe * precio_venta,
+  };
+}
+
+function leerEntradas() {
+  return {
+    kg:              num('kg_mp', 0),
+    precio:          num('precio_mp', 70),
+    precioManteca:   num('precio_manteca', 62),
+    precioAzucar:    num('precio_azucar', 3.8),
+    inclusion:       document.getElementById('inclusion').value,
+    precioInclusion: num('precio_inclusion', 0),
+    pres:            parseInt(document.getElementById('presentacion').value) || PRES_DEFECTO,
+    cajaPrecio:      num('caja_precio', 0.69),
+    cajaN:           Math.max(1, Math.floor(num('caja_n', 1))),
+    kgMes:           num('kg_mes', 80),
+    util:            num('utilidad_pct', 50),
+    imp:             num('impuesto_pct', 1.5),
+  };
+}
+
+function cambiarInclusion() {
+  const inc = INCLUSIONES[document.getElementById('inclusion').value];
+  document.getElementById('precio_inclusion').value = inc.precio;
+  recalcular();
+}
+
+function recalcular() {
+  const p = leerEntradas();
+  aplicarUIEntradas(p);
+  if (p.kg <= 0) { calc = {}; limpiarUI(); return; }
+  calc = calcularLote(p);
+  renderP1(); renderFlujo(); renderP2(); renderP3();
+}
+
+function aplicarUIEntradas(p) {
+  const pp = PRESENTACIONES[p.pres] || PRESENTACIONES[PRES_DEFECTO];
+  const inc = INCLUSIONES[p.inclusion] || INCLUSIONES[INCLUSION_DEFECTO];
+  setText('lbl-precio-incl', `${inc.nombre}`);
+  document.getElementById('caja-box').style.display = pp.tableta ? '' : 'none';
+  const items = empaqueItems(p.pres, p), total = items.reduce((s, it) => s + it.p, 0);
+  document.getElementById('emp-box').innerHTML =
+    `<b>Empaque ${pp.nombre}</b> (por unidad): ` + items.map(it => `${it.n} S/ ${fmt(it.p, 3)}`).join(' + ') + ` = <b>S/ ${fmt(total, 3)}</b>`;
+  const kg = p.kg, kgMes = p.kgMes;
+  setText('hint-inputs', kg > 0 && kgMes > 0
+    ? (kg >= kgMes
+        ? `Este lote ≥ la base mensual (${fmt(kgMes, 0)} kg de pasta): los gastos administrativos NO aumentan; se carga el mes completo: S/ ${fmt(ADMIN_MES)}.`
+        : `Este lote = ${fmt(kg / kgMes * 100, 1)} % de la base mensual (${fmt(kgMes, 0)} kg): gastos administrativos S/ ${fmt(ADMIN_MES)} × ${fmt(kg / kgMes, 3)} = S/ ${fmt(ADMIN_MES * kg / kgMes)}.`)
+    : `Los gastos administrativos del mes (S/ ${fmt(ADMIN_MES)}) se reparten según kg de pasta del lote ÷ base mensual.`);
+}
+
+function limpiarUI() {
+  document.querySelectorAll('.out').forEach(el => { el.textContent = '—'; });
+  document.getElementById('flujo-body').innerHTML = '<div class="hist-empty">Ingresa los kg de pasta para ver el flujo.</div>';
+}
+
+function renderP1() {
+  const c = calc, sf = s => `S/ ${fmt(s)}`;
+  setText('k1-kg', fmt(c.kg));
+  setText('k1-choc', fmt(c.kg_choc, 1));
+  setText('k1-rend', fmt(c.rendimiento, 1));
+  setText('k1-unidades', fmtInt(c.unidades));
+  setText('k1-pres-label', c.nombre_pres);
+  setText('f-pasta-kg', fmt(c.kg_licor, 1));   setText('f-pasta-s', sf(c.costo_pasta));
+  setText('f-manteca-kg', fmt(c.kg_manteca, 1)); setText('f-manteca-s', sf(c.costo_manteca));
+  setText('f-azucar-kg', fmt(c.kg_azucar, 1)); setText('f-azucar-s', sf(c.costo_azucar));
+  setText('f-incl-lbl', `${c.nombre_incl} (12 % del peso)`);
+  setText('f-incl-kg', fmt(c.kg_incl, 1));     setText('f-incl-s', sf(c.costo_incl));
+}
+
+function renderFlujo() {
+  const c = calc;
+  const CLS = { verde: 'badge-verde', ambar: 'badge-ambar', rojo: 'badge-rojo' };
+  const TXT = { verde: 'Fluye bien', ambar: 'Presión alta', rojo: 'Cuello botella' };
+  const COLOR = { verde: 'var(--verde)', ambar: 'var(--ambar)', rojo: 'var(--rojo)' };
+  let html = '';
+  c.etapas.forEach((f, i) => {
+    const mov = f.base === 'und' ? `${fmtInt(c.unidades)} unid.` : `${fmt(f.kin, 1)} → ${fmt(f.kout, 1)} kg`;
+    const tiempos = `${fmt(f.hm, 1)} h máq · ${fmt(f.hh, 1)} h hombre`;
+    html += `
+    <div class="etapa-row">
+      <div class="etapa-num ${f.nivel}">${i + 1}</div>
+      <div class="etapa-info">
+        <div class="etapa-nombre">${f.n.replace(/^\d+\.\s*/, '')}</div>
+        <div class="etapa-sub">${f.sub} · ${mov}</div>
+        <div class="etapa-sub">${tiempos}</div>
+      </div>
+      <div class="etapa-bar-wrap">
+        <div class="etapa-bar-bg"><div class="etapa-bar-fill" style="width:${Math.round(f.carga)}%;background:${COLOR[f.nivel]}"></div></div>
+        <div class="etapa-bar-pct">${fmt(f.pasiva ? f.hh : Math.max(f.hm, f.hh), 1)} h</div>
+      </div>
+      <div class="etapa-badge"><span class="badge ${CLS[f.nivel]}">${TXT[f.nivel]}</span></div>
+    </div>`;
+    if (i < c.etapas.length - 1) html += `<div class="etapa-arrow">↓</div>`;
+  });
+  document.getElementById('flujo-body').innerHTML = html;
+}
+
+function renderP2() {
+  const c = calc, sf = s => `S/ ${fmt(s)}`;
+  setText('k2-a', sf(c.entradas.precio));
+  setText('k2-costo-und', sf(c.costo_und));
+  setText('k2-und-label', c.nombre_pres);
+  setText('k2-capital', sf(c.capital_trabajo));
+  setText('k2-costo-kg', sf(c.costo_kg));
+  setText('k2-elec', sf(c.costo_elec));
+  setText('abc-incl-lbl', c.nombre_incl);
+  setText('abc-emp-lbl', `Empaque ${c.nombre_pres}: ${c.empaque.map(i => i.n).join(' + ')}`);
+  const total = c.capital_trabajo;
+  const pct = v => total > 0 ? fmt(v / total * 100, 1) + '%' : '—';
+  [['pasta', c.costo_pasta], ['manteca', c.costo_manteca], ['azucar', c.costo_azucar], ['incl', c.costo_incl], ['emp', c.costo_emp], ['elec', c.costo_elec],
+   ['mod', c.costo_mod], ['dep', c.costo_dep], ['mant', c.costo_mant], ['admin', c.costo_admin], ['epp', c.costo_epp]].forEach(([k, v]) => {
+    setText('abc-' + k, sf(v)); setText('abc-' + k + '-pct', pct(v));
+  });
+  setText('abc-total', sf(total));
+  setText('k2-fijo', sf(c.fijo));     setText('k2-fijo-pct', pct(c.fijo) + ' del total');
+  setText('k2-var', sf(c.variable));  setText('k2-var-pct', pct(c.variable) + ' del total');
+  setText('k2-hmaq', fmt(c.horas_maq, 1));
+  setText('k2-hhom', fmt(c.horas_hom, 1));
+  setText('k2-tandas', fmt(c.tandas, 1));
+  setText('k2-dias', c.dias);
+}
+
+function renderP3() {
+  const c = calc, sf = s => `S/ ${fmt(s)}`;
+  setText('k3-1', sf(c.precio_venta)); setText('k3-1-u', `por ${c.nombre_pres}`);
+  setText('k3-3', sf(c.precio_igv));
+  setText('k3-4', sf(c.precio_kg));
+  setText('k3-util', sf(c.utilidad_sol));
+  if (c.qe === null) { setText('be-qe', '—'); setText('be-pct', 'precio ≤ costo variable'); setText('be-ing', '—'); }
+  else {
+    setText('be-qe', fmtInt(Math.ceil(c.qe)));
+    setText('be-pct', `${fmt(c.qe / c.unidades * 100, 0)}% de las ${fmtInt(c.unidades)} unidades del lote`);
+    setText('be-ing', sf(c.ingreso_eq));
+  }
+  setText('esc-th-u', `Unidades (${c.nombre_pres})`);
+  setText('esc-cur-lbl', `${fmt(c.kg, 0)} (este lote)`);
+  [20, 40, 80, 'cur'].forEach(k => {
+    const r = k === 'cur' ? c : calcularLote({ ...c.entradas, kg: k });
+    setText(`esc-${k}-u`, fmtInt(r.unidades));
+    setText(`esc-${k}-c`, sf(r.costo_und));
+    setText(`esc-${k}-p`, sf(r.precio_venta));
+  });
+}
+
+function setTab(idx) {
+  document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i === idx));
+  document.querySelectorAll('.tab-pane').forEach((p, i) => p.classList.toggle('active', i === idx));
+}
+
+// ══════════════════════════════════════════
+// LOTE AUTOMÁTICO
+// ══════════════════════════════════════════
+function leerHist()     { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch (e) { return []; } }
+function guardarHist(h) { localStorage.setItem(STORAGE_KEY, JSON.stringify(h)); }
+function generarLoteId(reservar = false) {
+  const hoy = new Date();
+  const dd = String(hoy.getDate()).padStart(2, '0'), mm = String(hoy.getMonth() + 1).padStart(2, '0'), yyyy = hoy.getFullYear();
+  const prefijo = `Choc_${dd}${mm}${yyyy}`;
+  let cont = {}; try { cont = JSON.parse(localStorage.getItem(STORAGE_KEY + '_seq') || '{}'); } catch (e) {}
+  const mayorLocal = leerHist().filter(r => r.lote && r.lote.startsWith(prefijo)).reduce((m, r) => Math.max(m, parseInt(r.lote.slice(prefijo.length)) || 0), 0);
+  const n = Math.max(cont[prefijo] || 0, mayorLocal) + 1;
+  if (reservar) { cont[prefijo] = n; localStorage.setItem(STORAGE_KEY + '_seq', JSON.stringify(cont)); }
+  return `${prefijo}${String(n).padStart(2, '0')}`;
+}
+function formatFecha(d) { return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`; }
+
+// ══════════════════════════════════════════
+// GUARDAR LOTE — claves = encabezados de la hoja de Google Sheets (misma hoja "Lotes" que pasta y servicios)
+// ══════════════════════════════════════════
+function guardarLote() {
+  recalcular();
+  const c = calc;
+  if (!c.kg || c.kg <= 0) { mostrarMsg('Ingresa los datos antes de guardar.', false); return; }
+  const lote_id = generarLoteId(true);
+  const hoy = new Date(), fecha = formatFecha(hoy);
+  const registro = {
+    lote: lote_id, fecha_proceso: fecha, tipo: 'chocolate',
+    materia_prima_kg:     c.kg,                 // kg de pasta de cacao
+    precio_materia_prima: c.entradas.precio,    // S/ por kg de pasta
+    presentacion_gramos:  c.pres,
+    producto_terminado:   +c.kg_choc.toFixed(2),   // kg de chocolate
+    unidades_producidas:  c.unidades,
+    costo_und_prod:       +c.costo_und.toFixed(4),
+    capital_trabajo:      +c.capital_trabajo.toFixed(2),
+    costo_fijo:           +c.fijo.toFixed(2),
+    precio_venta_und:     +c.precio_venta.toFixed(4),
+    utilidad_soles:       +c.utilidad_sol.toFixed(2),
+    horas_maquinas:       +c.horas_maq.toFixed(2),
+    horas_hombre:         +c.horas_hom.toFixed(2),
+    dias_trabajo:         c.dias,
+    costo_mp:             +c.costo_mp.toFixed(2),    // pasta + manteca + azúcar + inclusión
+    costo_flete:          0,
+    costo_emp:            +c.costo_emp.toFixed(2),
+    gas_soles:            0,
+    electricidad_soles:   +c.costo_elec.toFixed(2),
+    costo_dep:            +c.costo_dep.toFixed(2),
+    costo_mant:           +c.costo_mant.toFixed(2),
+    costo_mod:            +c.costo_mod.toFixed(2),
+    costo_admin:          +c.costo_admin.toFixed(2),
+    costo_epp:            +c.costo_epp.toFixed(2),
+    etapas_contratadas:   '',
+    timestamp:            hoy.toISOString(),
+    ingreso_soles:        +(c.unidades * c.precio_venta).toFixed(2),
+    tarifa_kg:            +c.precio_kg.toFixed(4),
+    inclusion:            c.inclusion,
+    sincronizado:         false,
+  };
+  const hist = leerHist(); hist.unshift(registro); guardarHist(hist);
+  document.getElementById('lote-display').textContent = generarLoteId();
+  document.getElementById('fecha-display').textContent = fecha;
+  mostrarMsg(`✅ Lote ${lote_id} guardado localmente.`, true);
+  renderHistorial();
+  intentarSync();
+}
+
+// ══════════════════════════════════════════
+// SYNC GOOGLE SHEETS (envía, lee ?action=datos y marca solo lo que está en la hoja)
+// ══════════════════════════════════════════
+let syncEnCurso = false;
+const sheetsConfigurado = () => CFG.APPS_SCRIPT_URL && !CFG.APPS_SCRIPT_URL.includes('PEGAR_URL');
+function pick(r, ...names) { const ks = Object.keys(r); for (const n of names) { const k = ks.find(x => x.toLowerCase() === n.toLowerCase()); if (k !== undefined) return r[k]; } }
+function setSync(status, badge) { setText('sync-status', status); setText('sync-badge', badge); }
+function estadoSync(hist = leerHist()) {
+  if (!sheetsConfigurado()) return setSync('⚙️ Google Sheets no configurado (solo local)', '● Solo local');
+  const pend = hist.filter(r => !r.sincronizado).length;
+  if (pend > 0) setSync(`📦 ${pend} lote(s) sin sincronizar`, `● ${pend} pendiente(s)`);
+  else setSync('✅ Todo sincronizado', '● Sincronizado');
+}
+async function enviarRegistro(reg) {
+  const { sincronizado, ...datos } = reg;
+  if (CFG.SYNC_MODE === 'POST') { const fd = new FormData(); fd.append('data', JSON.stringify(datos)); return fetch(CFG.APPS_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: fd }); }
+  return fetch(CFG.APPS_SCRIPT_URL + '?action=guardar&data=' + encodeURIComponent(JSON.stringify(datos)), { mode: 'no-cors' });
+}
+async function lotesRemotos() {
+  const json = await (await fetch(CFG.APPS_SCRIPT_URL + '?action=datos')).json();
+  if (json.status !== 'ok') throw new Error(json.mensaje || 'respuesta inválida');
+  return new Set(json.datos.map(r => String(pick(r, 'lote'))));
+}
+async function intentarSync() {
+  const pend = leerHist().filter(r => !r.sincronizado);
+  if (!sheetsConfigurado() || !pend.length) return estadoSync();
+  if (!navigator.onLine) { setSync(`📦 ${pend.length} lote(s) pendiente(s) — sin internet`, '● Sin red'); return; }
+  if (syncEnCurso) return;
+  syncEnCurso = true;
+  try {
+    for (const reg of pend) await enviarRegistro(reg);
+    const enHoja = await lotesRemotos();
+    const h = leerHist();
+    h.forEach(r => { if (enHoja.has(r.lote)) r.sincronizado = true; });
+    guardarHist(h);
+  } catch (e) { setSync(`⚠️ Error de red/Sheets — ${pend.length} pendiente(s)`, '● Error red'); }
+  finally { syncEnCurso = false; renderHistorial(); }
+}
+window.addEventListener('online', intentarSync);
+
+// ══════════════════════════════════════════
+// HISTORIAL (máx. 5 filas visibles)
+// ══════════════════════════════════════════
+const MAX_HISTORIAL_VISIBLE = 5;
+function renderHistorial() {
+  const hist = leerHist(), body = document.getElementById('hist-body');
+  if (!hist.length) { body.innerHTML = '<div class="hist-empty">Sin registros guardados.</div>'; estadoSync(hist); return; }
+  let html = `<table><tr><th>Lote</th><th>Fecha</th><th>Pasta kg</th><th>Inclusión</th><th>Pres.</th><th>Unid.</th><th>Costo/und</th><th>Estado</th><th></th></tr>`;
+  hist.slice(0, MAX_HISTORIAL_VISIBLE).forEach(r => {
+    const badge = r.sincronizado ? '<span class="badge badge-verde">✓ Sheets</span>' : '<span class="badge badge-ambar">Pendiente</span>';
+    const btn = r.sincronizado
+      ? `<button onclick="eliminarLote('${r.lote}')" title="Eliminar lote" style="background:none;border:none;cursor:pointer;font-size:14px;color:var(--rojo);padding:2px 4px;">🗑️</button>`
+      : `<span title="Solo se eliminan lotes sincronizados" style="font-size:12px;color:var(--borde);padding:2px 4px;">🔒</span>`;
+    html += `<tr><td style="font-weight:600;font-size:10px">${r.lote}</td><td>${r.fecha_proceso}</td><td>${r.materia_prima_kg}</td><td>${r.inclusion || ''}</td><td>${r.presentacion_gramos}g</td>
+      <td>${fmtInt(r.unidades_producidas)}</td><td>S/ ${fmt(r.costo_und_prod)}</td><td>${badge}</td><td style="text-align:center">${btn}</td></tr>`;
+  });
+  html += '</table>';
+  if (hist.length > MAX_HISTORIAL_VISIBLE) html += `<div class="hist-mas">Mostrando los ${MAX_HISTORIAL_VISIBLE} más recientes de ${hist.length} lotes guardados.</div>`;
+  body.innerHTML = html;
+  estadoSync(hist);
+}
+function eliminarLote(lote_id) {
+  if (!confirm(`¿Eliminar el lote ${lote_id} del historial local?\nYa está guardado en Google Sheets.`)) return;
+  guardarHist(leerHist().filter(r => r.lote !== lote_id));
+  renderHistorial();
+}
+
+function setText(id, val) { const el = document.getElementById(id); if (el) el.textContent = val; }
+function fmt(n, dec = 2) { if (n === undefined || n === null || isNaN(n)) return '—'; return Number(n).toLocaleString('es-PE', { minimumFractionDigits: dec, maximumFractionDigits: dec }); }
+function fmtInt(n) { if (n === undefined || n === null || isNaN(n)) return '—'; return Number(n).toLocaleString('es-PE'); }
+function mostrarMsg(txt, ok) {
+  const el = document.getElementById('msg-guardado');
+  el.textContent = txt; el.className = 'msg-guardado ' + (ok ? 'ok' : 'err'); el.style.display = 'block';
+  setTimeout(() => { el.style.display = 'none'; }, 4000);
+}
+
+(function init() {
+  document.title = `Asistente de Costos · Chocolate 60 % · ${CFG.EMPRESA}`;
+  document.getElementById('h-empresa').textContent = CFG.EMPRESA;
+  if (!CFG.MOSTRAR_CITE) document.getElementById('h-cite').style.display = 'none';
+  const bp = document.getElementById('btn-pasta');     if (CFG.PASTA_URL) bp.href = CFG.PASTA_URL; else bp.style.display = 'none';
+  const bd = document.getElementById('btn-dashboard'); if (CFG.DASHBOARD_URL) bd.href = CFG.DASHBOARD_URL; else bd.style.display = 'none';
+  document.getElementById('lote-display').textContent = generarLoteId();
+  document.getElementById('fecha-display').textContent = formatFecha(new Date());
+  document.getElementById('presentacion').innerHTML = Object.keys(PRESENTACIONES)
+    .map(g => `<option value="${g}"${+g === PRES_DEFECTO ? ' selected' : ''}>${PRESENTACIONES[g].nombre}</option>`).join('');
+  document.getElementById('inclusion').innerHTML = Object.keys(INCLUSIONES)
+    .map(k => `<option value="${k}">${INCLUSIONES[k].nombre}</option>`).join('');
+  document.getElementById('precio_inclusion').value = INCLUSIONES[INCLUSION_DEFECTO].precio;
+  recalcular();
+  renderHistorial();
+  intentarSync();
+})();
+</script>
+</body>
+</html>
